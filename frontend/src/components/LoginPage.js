@@ -1,20 +1,42 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { toast } from 'react-toastify';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState(''); 
+    const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting email:', email, 'and password:', password);
-
-        
-        navigate('/home');
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('userData', JSON.stringify(data)); // Save user data
+                toast.success('Login successful');
+                navigate('/home');
+            } else {
+                const data = await response.json();
+                toast.error(data.message || 'Login failed');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error('An error occurred. Please try again.');
+        }
     };
+    
+    
 
     return (
         <div className="bg-red-100 h-screen flex items-center justify-center">

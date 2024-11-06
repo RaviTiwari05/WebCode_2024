@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProfilePage from './ProfilePage';
 
 function HomePage() {
@@ -9,7 +10,18 @@ function HomePage() {
     const [announcementText, setAnnouncementText] = useState('');
     const [announcementDepartment, setAnnouncementDepartment] = useState('');
     const [announcementUserName, setAnnouncementUserName] = useState('');
+    const navigate = useNavigate();
 
+    // Check if the user is authenticated
+    useEffect(() => {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        console.log('Is Authenticated:', isAuthenticated); // Debugging line
+        if (!isAuthenticated) {
+            navigate('/login'); // Redirect to login if not authenticated
+        }
+    }, [navigate]);
+
+    // Load initial announcements
     useEffect(() => {
         const announcementsData = [
             { id: 1, text: "New class timings.", department: "Civil Engineering", userName: "Ananth" },
@@ -20,6 +32,7 @@ function HomePage() {
         setFilteredResults(announcementsData);
     }, []);
 
+    // Filter announcements based on search query
     useEffect(() => {
         const lowercasedQuery = searchQuery.toLowerCase();
         const results = announcements.filter(
@@ -31,6 +44,7 @@ function HomePage() {
         setFilteredResults(results);
     }, [searchQuery, announcements]);
 
+    // Handle new announcement submission
     const handleAnnouncementSubmit = (e) => {
         e.preventDefault();
         const newAnnouncement = {
@@ -46,6 +60,7 @@ function HomePage() {
         setAnnouncementUserName('');
     };
 
+    // Render profile page if requested
     if (showProfile) return <ProfilePage />;
 
     return (
@@ -56,7 +71,7 @@ function HomePage() {
                         <img
                             src="https://www.dotmagazine.online/_Resources/Persistent/7/c/7/a/7c7ab2423d2f340edfe42eb99461ff58f6e9a2ba/iStock-683542394-900x507-720x406.jpg"
                             alt="Profile Logo"
-                            className="w-8 h-8 rounded-full hover:scale-105 transform transition duration-200" // Reduced scale to 1.05
+                            className="w-8 h-8 rounded-full hover:scale-105 transform transition duration-200"
                         />
                         <h1 className="text-2xl font-bold hover:text-blue-600 transition-colors duration-200">Smart Campus Connect</h1>
                     </div>
@@ -81,7 +96,7 @@ function HomePage() {
             <main className="flex-grow p-6">
                 <h1 className="text-5xl font-bold text-center text-blue-700 mb-8 hover:text-blue-500 transition-colors duration-200">Welcome to Smart Campus Connect!</h1>
 
-                <section id="announcement-form" className="my-8 p-6 bg-white shadow rounded hover:shadow-lg transition-shadow duration-200 transform hover:scale-102"> {/* Reduced scale to 1.02 */}
+                <section id="announcement-form" className="my-8 p-6 bg-white shadow rounded hover:shadow-lg transition-shadow duration-200 transform hover:scale-102">
                     <h2 className="text-2xl font-semibold mb-4 text-gray-700">Make a New Announcement</h2>
                     <form onSubmit={handleAnnouncementSubmit} className="space-y-4">
                         <input
@@ -110,7 +125,7 @@ function HomePage() {
                         />
                         <button
                             type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 transform hover:scale-102" // Reduced scale to 1.02
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 transform hover:scale-102"
                         >
                             Post Announcement
                         </button>
@@ -124,7 +139,7 @@ function HomePage() {
                             {filteredResults.map((item) => (
                                 <li
                                     key={item.id}
-                                    className="p-4 bg-white rounded shadow hover:shadow-lg transition-shadow duration-200 transform hover:scale-102" // Reduced scale to 1.02
+                                    className="p-4 bg-white rounded shadow hover:shadow-lg transition-shadow duration-200 transform hover:scale-102"
                                 >
                                     <p className="text-lg font-semibold hover:text-blue-500 transition-colors duration-200">{item.text}</p>
                                     <p className="text-gray-500">

@@ -1,20 +1,38 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function SignUpPage() {
-  const [name, setName] = useState('');
-  const [department, setDepartment] = useState('');
-  const [profession, setProfession] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+    const [name, setName] = useState('');
+    const [department, setDepartment] = useState('');
+    const [profession, setProfession] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submitting sign-up info:', { name, department, profession, email, password });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, department, profession, email, password }),
+            });
 
-    navigate('/');
-  };
+            if (response.ok) {
+                toast.success('Sign-up successful');
+                navigate('/');
+            } else {
+                const data = await response.json();
+                toast.error(data.message || 'Sign-up failed');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error('An error occurred. Please try again.');
+        }
+    };
 
   return (
     <div className="bg-blue-100 h-screen flex items-center justify-center">

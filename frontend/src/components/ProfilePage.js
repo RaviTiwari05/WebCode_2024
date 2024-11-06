@@ -1,19 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 function ProfilePage() {
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        // Fetch user data from the backend
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/user/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Replace with your token logic
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserData(data);
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    if (!userData) {
+        return <div>Loading...</div>; // Show a loading state while fetching data
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
             <div className="p-10 bg-white rounded-lg shadow-xl text-center w-96">
                 <h1 className="text-4xl font-bold mb-4 text-blue-700">My Profile</h1>
                 <div className="space-y-4">
                     <div className="text-lg">
-                        <span className="font-semibold text-gray-700">Name: </span>Ananth
+                        <span className="font-semibold text-gray-700">Name: </span>{userData.name}
                     </div>
                     <div className="text-lg">
-                        <span className="font-semibold text-gray-700">Department: </span>Civil Engineering
+                        <span className="font-semibold text-gray-700">Department: </span>{userData.department}
                     </div>
                     <div className="text-lg">
-                        <span className="font-semibold text-gray-700">Profession: </span>Student
+                        <span className="font-semibold text-gray-700">Profession: </span>{userData.profession}
+                    </div>
+                    <div className="text-lg">
+                        <span className="font-semibold text-gray-700">Email: </span>{userData.email}
                     </div>
                 </div>
                 <button
