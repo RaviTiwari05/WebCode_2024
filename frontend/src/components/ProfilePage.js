@@ -1,7 +1,10 @@
 import React from 'react';
-
+ 
+ 
 function ProfilePage({ profileData }) {
     if (!profileData) return <div>Loading...</div>;
+    
+     
 
     return (
         <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
@@ -19,7 +22,10 @@ function ProfilePage({ profileData }) {
                 <p className="text-lg">
                     <strong>Email:</strong> {profileData.email}
                 </p>
-            </div>
+                 
+            </div> 
+               
+         
         </div>
     );
 }

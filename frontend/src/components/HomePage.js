@@ -27,6 +27,7 @@ function HomePage() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:5000/api/announcements', {
+                
                 headers: {
                     Authorization: `Bearer ${token}` // Pass token for authentication
                 }
@@ -35,6 +36,8 @@ function HomePage() {
             if (response.ok) {
                 const data = await response.json();
                 setAnnouncements(data);
+              
+                
                 setFilteredResults(data);
             } else {
                 console.error('Failed to fetch announcements:', response.status);  // Debugging
@@ -51,6 +54,7 @@ function HomePage() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:5000/api/auth/profile', {
+               
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.ok) {
@@ -77,7 +81,6 @@ function HomePage() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:5000/api/announcements', {
-                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
