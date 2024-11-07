@@ -4,6 +4,7 @@ import ProfilePage from './ProfilePage';
 
 function HomePage() {
     const [showProfile, setShowProfile] = useState(false);
+    const [isLoading, setIsLoading] = useState(true); // Loading state for authentication check
     const [announcements, setAnnouncements] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredResults, setFilteredResults] = useState([]);
@@ -15,22 +16,25 @@ function HomePage() {
     // Check if the user is authenticated
     useEffect(() => {
         const isAuthenticated = localStorage.getItem('isAuthenticated');
-        console.log('Is Authenticated:', isAuthenticated); // Debugging line
         if (!isAuthenticated) {
             navigate('/login'); // Redirect to login if not authenticated
+        } else {
+            setIsLoading(false); // Stop loading if authenticated
         }
     }, [navigate]);
 
     // Load initial announcements
     useEffect(() => {
-        const announcementsData = [
-            { id: 1, text: "New class timings.", department: "Civil Engineering", userName: "Ananth" },
-            { id: 2, text: "Campus fest in nov!", department: "Cultural Fest", userName: "Alok" },
-            { id: 3, text: "Online class on Saturday.", department: "Computer Science", userName: "Mayank Pandey" }
-        ];
-        setAnnouncements(announcementsData);
-        setFilteredResults(announcementsData);
-    }, []);
+        if (!isLoading) {
+            const announcementsData = [
+                { id: 1, text: "New class timings.", department: "Civil Engineering", userName: "Ananth" },
+                { id: 2, text: "Campus fest in nov!", department: "Cultural Fest", userName: "Alok" },
+                { id: 3, text: "Online class on Saturday.", department: "Computer Science", userName: "Mayank Pandey" }
+            ];
+            setAnnouncements(announcementsData);
+            setFilteredResults(announcementsData);
+        }
+    }, [isLoading]);
 
     // Filter announcements based on search query
     useEffect(() => {
@@ -62,6 +66,9 @@ function HomePage() {
 
     // Render profile page if requested
     if (showProfile) return <ProfilePage />;
+
+    // Show loading message while authentication is being checked
+    if (isLoading) return <div>Loading...</div>;
 
     return (
         <div className="bg-blue-50 min-h-screen flex flex-col">

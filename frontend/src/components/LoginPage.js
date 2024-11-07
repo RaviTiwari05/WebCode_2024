@@ -22,10 +22,10 @@ function LoginPage() {
     
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('isAuthenticated', 'true');
-                localStorage.setItem('userData', JSON.stringify(data)); // Save user data
-                toast.success('Login successful');
-                navigate('/home');
+                localStorage.setItem('token', data.token); // Store JWT token in local storage
+                localStorage.setItem('isAuthenticated', 'true'); // Set authentication flag
+                toast.success(data.message || 'Login successful');
+                navigate('/home'); // Redirect to home page after successful login
             } else {
                 const data = await response.json();
                 toast.error(data.message || 'Login failed');
@@ -35,6 +35,7 @@ function LoginPage() {
             toast.error('An error occurred. Please try again.');
         }
     };
+    
     
     
 

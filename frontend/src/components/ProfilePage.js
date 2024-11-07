@@ -4,13 +4,12 @@ function ProfilePage() {
     const [userData, setUserData] = useState(null);
 
     useEffect(() => {
-        // Fetch user data from the backend
         const fetchUserData = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/user/profile', {
+                const response = await fetch('http://localhost:5000/api/auth/profile', {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Replace with your token logic
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
                 if (response.ok) {
@@ -28,7 +27,7 @@ function ProfilePage() {
     }, []);
 
     if (!userData) {
-        return <div>Loading...</div>; // Show a loading state while fetching data
+        return <div>Loading...</div>;
     }
 
     return (
