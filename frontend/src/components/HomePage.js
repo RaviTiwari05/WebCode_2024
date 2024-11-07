@@ -4,166 +4,162 @@ import ProfilePage from './ProfilePage';
 
 function HomePage() {
     const [showProfile, setShowProfile] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); // Loading state for authentication check
+    const [isLoading, setIsLoading] = useState(true);
     const [announcements, setAnnouncements] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredResults, setFilteredResults] = useState([]);
+    const [profileData, setProfileData] = useState(null);
     const [announcementText, setAnnouncementText] = useState('');
-    const [announcementDepartment, setAnnouncementDepartment] = useState('');
-    const [announcementUserName, setAnnouncementUserName] = useState('');
     const navigate = useNavigate();
 
-    // Check if the user is authenticated
     useEffect(() => {
         const isAuthenticated = localStorage.getItem('isAuthenticated');
         if (!isAuthenticated) {
-            navigate('/login'); // Redirect to login if not authenticated
+            navigate('/login');
         } else {
-            setIsLoading(false); // Stop loading if authenticated
+            fetchAnnouncements();
+            setIsLoading(false);
         }
     }, [navigate]);
 
-    // Load initial announcements
-    useEffect(() => {
-        if (!isLoading) {
-            const announcementsData = [
-                { id: 1, text: "New class timings.", department: "Civil Engineering", userName: "Ananth" },
-                { id: 2, text: "Campus fest in nov!", department: "Cultural Fest", userName: "Alok" },
-                { id: 3, text: "Online class on Saturday.", department: "Computer Science", userName: "Mayank Pandey" }
-            ];
-            setAnnouncements(announcementsData);
-            setFilteredResults(announcementsData);
+    // Fetch announcements from the API
+    const fetchAnnouncements = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/announcements');
+            if (response.ok) {
+                const data = await response.json();
+                setAnnouncements(data);
+                setFilteredResults(data);
+            } else {
+                throw new Error('Failed to fetch announcements');
+            }
+        } catch (error) {
+            console.error('Error fetching announcements:', error);
         }
-    }, [isLoading]);
+    };
 
-    // Filter announcements based on search query
+    const handleProfileClick = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/auth/profile', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setProfileData(data);
+                setShowProfile(true);
+            } else {
+                throw new Error('Failed to fetch profile');
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
+    // Handle announcement submission
+    const handleAnnouncementSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/announcements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ text: announcementText })
+            });
+    
+            if (response.ok) {
+                const newAnnouncement = await response.json(); // get the posted announcement
+                setAnnouncements((prev) => [newAnnouncement, ...prev]); // update announcements in UI
+                setFilteredResults((prev) => [newAnnouncement, ...prev]); // for filtered list
+                setAnnouncementText(''); // clear input field
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to post announcement:', errorData.message);
+            }
+        } catch (error) {
+            console.error('Error posting announcement:', error);
+        }
+    };
+    
+
+    // Update filtered results based on search query
     useEffect(() => {
-        const lowercasedQuery = searchQuery.toLowerCase();
-        const results = announcements.filter(
-            (announcement) =>
-                announcement.text.toLowerCase().includes(lowercasedQuery) ||
-                announcement.department.toLowerCase().includes(lowercasedQuery) ||
-                announcement.userName.toLowerCase().includes(lowercasedQuery)
+        const results = announcements.filter((announcement) =>
+            announcement.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            announcement.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            announcement.userName.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setFilteredResults(results);
     }, [searchQuery, announcements]);
 
-    // Handle new announcement submission
-    const handleAnnouncementSubmit = (e) => {
-        e.preventDefault();
-        const newAnnouncement = {
-            id: announcements.length + 1,
-            text: announcementText,
-            department: announcementDepartment,
-            userName: announcementUserName,
-        };
-        setAnnouncements([newAnnouncement, ...announcements]);
-        setFilteredResults([newAnnouncement, ...filteredResults]);
-        setAnnouncementText('');
-        setAnnouncementDepartment('');
-        setAnnouncementUserName('');
-    };
-
-    // Render profile page if requested
-    if (showProfile) return <ProfilePage />;
-
-    // Show loading message while authentication is being checked
+    if (showProfile) return <ProfilePage profileData={profileData} />;
     if (isLoading) return <div>Loading...</div>;
 
     return (
         <div className="bg-blue-50 min-h-screen flex flex-col">
-            <header className="bg-transparent sticky top-0 w-full py-4 px-6 shadow-md backdrop-blur-md">
-                <nav className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <img
-                            src="https://www.dotmagazine.online/_Resources/Persistent/7/c/7/a/7c7ab2423d2f340edfe42eb99461ff58f6e9a2ba/iStock-683542394-900x507-720x406.jpg"
-                            alt="Profile Logo"
-                            className="w-8 h-8 rounded-full hover:scale-105 transform transition duration-200"
-                        />
-                        <h1 className="text-2xl font-bold hover:text-blue-600 transition-colors duration-200">Smart Campus Connect</h1>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                        <input
-                            type="text"
-                            placeholder="Search announcements or users..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="border border-gray-300 rounded-md px-3 py-1 w-96 focus:outline-none focus:border-blue-500 transition duration-200"
-                        />
-                        <button
-                            onClick={() => setShowProfile(true)}
-                            className="text-gray-800 font-medium hover:text-blue-700 transition duration-200"
-                        >
-                            My Profile
-                        </button>
-                    </div>
-                </nav>
+            <header className="bg-blue-600 text-white p-4 flex items-center justify-between space-x-4">
+                <h1 className="text-2xl font-bold">Smart Campus Connect</h1>
+                <div className="flex-grow max-w-md">
+                    <input
+                        type="text"
+                        placeholder="Search by text, department, or user"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="border rounded px-4 py-2 w-full"
+                    />
+                </div>
+                <button
+                    onClick={handleProfileClick}
+                    className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-700"
+                >
+                    My Profile
+                </button>
+                <button
+                    onClick={handleLogout}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                    Logout
+                </button>
             </header>
 
-            <main className="flex-grow p-6">
-                <h1 className="text-5xl font-bold text-center text-blue-700 mb-8 hover:text-blue-500 transition-colors duration-200">Welcome to Smart Campus Connect!</h1>
+            <div className="flex-grow p-4">
+                <form onSubmit={handleAnnouncementSubmit} className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Share an announcement..."
+                        value={announcementText}
+                        onChange={(e) => setAnnouncementText(e.target.value)}
+                        className="border rounded px-4 py-2 w-full"
+                        required
+                    />
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-700"
+                    >
+                        Post Announcement
+                    </button>
+                </form>
 
-                <section id="announcement-form" className="my-8 p-6 bg-white shadow rounded hover:shadow-lg transition-shadow duration-200 transform hover:scale-102">
-                    <h2 className="text-2xl font-semibold mb-4 text-gray-700">Make a New Announcement</h2>
-                    <form onSubmit={handleAnnouncementSubmit} className="space-y-4">
-                        <input
-                            type="text"
-                            placeholder="Announcement Text"
-                            value={announcementText}
-                            onChange={(e) => setAnnouncementText(e.target.value)}
-                            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:border-blue-500 transition duration-200"
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Department"
-                            value={announcementDepartment}
-                            onChange={(e) => setAnnouncementDepartment(e.target.value)}
-                            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:border-blue-500 transition duration-200"
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Your Name"
-                            value={announcementUserName}
-                            onChange={(e) => setAnnouncementUserName(e.target.value)}
-                            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:border-blue-500 transition duration-200"
-                            required
-                        />
-                        <button
-                            type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 transform hover:scale-102"
-                        >
-                            Post Announcement
-                        </button>
-                    </form>
-                </section>
-
-                <section id="announcements" className="my-8">
-                    <h2 className="text-3xl font-semibold text-blue-600 mb-4">Announcements Feed</h2>
-                    {filteredResults.length > 0 ? (
-                        <ul className="space-y-4">
-                            {filteredResults.map((item) => (
-                                <li
-                                    key={item.id}
-                                    className="p-4 bg-white rounded shadow hover:shadow-lg transition-shadow duration-200 transform hover:scale-102"
-                                >
-                                    <p className="text-lg font-semibold hover:text-blue-500 transition-colors duration-200">{item.text}</p>
-                                    <p className="text-gray-500">
-                                        Department: {item.department} | Posted by: {item.userName}
-                                    </p>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-gray-700">No results found.</p>
-                    )}
-                </section>
-            </main>
-
-            <footer className="bg-blue-200 text-center py-4 text-gray-700 hover:text-gray-900 transition duration-200">
-                &copy; {new Date().getFullYear()} Smart Campus Connect. All rights reserved.
-            </footer>
+                <h2 className="text-xl font-bold mb-2">Announcements</h2>
+                <ul>
+                    {filteredResults.map((announcement) => (
+                        <li key={announcement._id} className="border p-4 mb-2 rounded bg-white shadow-md">
+                            <p className="text-lg font-medium">{announcement.text}</p>
+                            <p className="text-sm text-gray-600">Department: {announcement.department}</p>
+                            <p className="text-sm text-gray-600">Posted by: {announcement.userName}</p>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }

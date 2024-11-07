@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const authRoutes = require('./routes/auth'); 
+const announcementRoutes = require('./routes/announcementRoutes');
 
 require('dotenv').config();
 
@@ -19,5 +20,6 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 app.listen(PORT, () => console.log(`Listening on: ${PORT}`));
