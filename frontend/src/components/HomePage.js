@@ -18,23 +18,32 @@ function HomePage() {
             navigate('/login');
         } else {
             fetchAnnouncements();
-            setIsLoading(false);
         }
     }, [navigate]);
 
     // Fetch announcements from the API
     const fetchAnnouncements = async () => {
+        setIsLoading(true);  // Start loading
         try {
-            const response = await fetch('http://localhost:5000/api/announcements');
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/announcements', {
+                headers: {
+                    Authorization: `Bearer ${token}` // Pass token for authentication
+                }
+            });
+
             if (response.ok) {
                 const data = await response.json();
                 setAnnouncements(data);
                 setFilteredResults(data);
             } else {
+                console.error('Failed to fetch announcements:', response.status);  // Debugging
                 throw new Error('Failed to fetch announcements');
             }
         } catch (error) {
-            console.error('Error fetching announcements:', error);
+            console.error('Error fetching announcements:', error);  // Debugging
+        } finally {
+            setIsLoading(false);  // Stop loading
         }
     };
 
@@ -75,21 +84,17 @@ function HomePage() {
                 },
                 body: JSON.stringify({ text: announcementText })
             });
-    
+
             if (response.ok) {
-                const newAnnouncement = await response.json(); // get the posted announcement
-                setAnnouncements((prev) => [newAnnouncement, ...prev]); // update announcements in UI
-                setFilteredResults((prev) => [newAnnouncement, ...prev]); // for filtered list
-                setAnnouncementText(''); // clear input field
+                setAnnouncementText(''); // Clear the input field
+                fetchAnnouncements(); // Refresh announcements after posting
             } else {
-                const errorData = await response.json();
-                console.error('Failed to post announcement:', errorData.message);
+                throw new Error('Failed to post announcement');
             }
         } catch (error) {
             console.error('Error posting announcement:', error);
         }
     };
-    
 
     // Update filtered results based on search query
     useEffect(() => {

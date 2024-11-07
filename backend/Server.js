@@ -12,7 +12,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
-app.use(cors()); // Enable CORS
+//app.use(cors()); // Enable CORS
+app.use(cors({
+  origin: 'http://localhost:3000',  // Adjust for your frontend port
+  credentials: true
+}));
+
 
 mongoose
   .connect(process.env.MONGODB_URL)

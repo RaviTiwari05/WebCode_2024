@@ -1,14 +1,13 @@
-// backend/routes/announcementRoutes.js
 const express = require('express');
 const router = express.Router();
 const Announcement = require('../models/Announcement');
-const authMiddleware = require('../middleware/authMiddleware'); // Middleware to protect routes
+const authMiddleware = require('../middleware/authMiddleware');
 
 // Route to create a new announcement
 router.post('/', authMiddleware, async (req, res) => {
     try {
         const { text } = req.body;
-        const { userName, department } = req.user; // Extract from user data
+        const { userName, department } = req.user;
 
         const announcement = new Announcement({
             text,
@@ -16,7 +15,7 @@ router.post('/', authMiddleware, async (req, res) => {
             department
         });
         await announcement.save();
-        res.status(201).json(announcement);
+        res.status(201).json(announcement);  // Send the new announcement as response
     } catch (error) {
         res.status(500).json({ message: 'Failed to create announcement' });
     }
