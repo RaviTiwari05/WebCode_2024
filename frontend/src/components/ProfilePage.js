@@ -1,33 +1,36 @@
 import React from 'react';
- 
- 
-function ProfilePage({ profileData }) {
-    if (!profileData) return <div>Loading...</div>;
-    
-     
 
-    return (
-        <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
-            <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-                <h1 className="text-2xl font-bold text-blue-600 mb-4">User Profile</h1>
-                <p className="text-lg">
-                    <strong>Name:</strong> {profileData.name}
-                </p>
-                <p className="text-lg">
-                    <strong>Department:</strong> {profileData.department}
-                </p>
-                <p className="text-lg">
-                    <strong>Profession:</strong> {profileData.profession}
-                </p>
-                <p className="text-lg">
-                    <strong>Email:</strong> {profileData.email}
-                </p>
-                 
-            </div> 
-               
-         
+function ProfilePage({ profileData }) {
+  if (!profileData) return <div>Loading...</div>;
+
+  return (
+    <div className="bg-gradient-to-r from-blue-400 to-purple-500 min-h-screen flex items-center justify-center text-center p-4">
+      <div className="bg-white shadow-2xl rounded-lg p-6 w-full max-w-sm transform transition duration-500 hover:scale-105">
+        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mt-3">
+          My Profile
+        </h1>
+        
+        <div className="flex flex-col space-y-4 text-left mt-6">
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-semibold text-gray-700">Name:</p>
+            <p className="text-lg text-gray-900">{profileData.name}</p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-semibold text-gray-700">Department:</p>
+            <p className="text-lg text-gray-900">{profileData.department}</p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-semibold text-gray-700">Profession:</p>
+            <p className="text-lg text-gray-900">{profileData.profession}</p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-lg font-semibold text-gray-700">Email:</p>
+            <p className="text-lg text-gray-900">{profileData.email}</p>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 export default ProfilePage;

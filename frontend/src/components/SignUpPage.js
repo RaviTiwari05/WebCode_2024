@@ -23,7 +23,7 @@ function SignUpPage() {
 
             if (response.ok) {
                 toast.success('Sign-up successful');
-                navigate('/home');
+                navigate('/');
             } else {
                 const data = await response.json();
                 toast.error(data.message || 'Sign-up failed');

@@ -18,35 +18,23 @@ function HomePage() {
             navigate('/login');
         } else {
             fetchAnnouncements();
+            setIsLoading(false);
         }
     }, [navigate]);
 
     // Fetch announcements from the API
     const fetchAnnouncements = async () => {
-        setIsLoading(true);  // Start loading
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/announcements', {
-                
-                headers: {
-                    Authorization: `Bearer ${token}` // Pass token for authentication
-                }
-            });
-
+            const response = await fetch('http://localhost:5000/api/announcements');
             if (response.ok) {
                 const data = await response.json();
                 setAnnouncements(data);
-              
-                
                 setFilteredResults(data);
             } else {
-                console.error('Failed to fetch announcements:', response.status);  // Debugging
                 throw new Error('Failed to fetch announcements');
             }
         } catch (error) {
-            console.error('Error fetching announcements:', error);  // Debugging
-        } finally {
-            setIsLoading(false);  // Stop loading
+            console.error('Error fetching announcements:', error);
         }
     };
 
@@ -54,7 +42,6 @@ function HomePage() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:5000/api/auth/profile', {
-               
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.ok) {
@@ -72,7 +59,7 @@ function HomePage() {
     const handleLogout = () => {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/');
     };
 
     // Handle announcement submission
@@ -81,16 +68,18 @@ function HomePage() {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:5000/api/announcements', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({ text: announcementText })
             });
-
             if (response.ok) {
-                setAnnouncementText(''); // Clear the input field
-                fetchAnnouncements(); // Refresh announcements after posting
+                const newAnnouncement = await response.json();
+                setAnnouncementText(''); // Clear input
+                setAnnouncements([newAnnouncement, ...announcements]); // Add new announcement to state
+                setFilteredResults([newAnnouncement, ...filteredResults]); // Update filtered results
             } else {
                 throw new Error('Failed to post announcement');
             }
@@ -113,8 +102,8 @@ function HomePage() {
     if (isLoading) return <div>Loading...</div>;
 
     return (
-        <div className="bg-blue-50 min-h-screen flex flex-col">
-            <header className="bg-blue-600 text-white p-4 flex items-center justify-between space-x-4">
+        <div className="bg-red-100 min-h-screen flex flex-col">
+            <header className="bg-red-500 text-white p-4 flex items-center justify-between space-x-4">
                 <h1 className="text-2xl font-bold">Smart Campus Connect</h1>
                 <div className="flex-grow max-w-md">
                     <input
@@ -127,13 +116,13 @@ function HomePage() {
                 </div>
                 <button
                     onClick={handleProfileClick}
-                    className="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-700"
+                    className="text-white bg-red-700 px-4 py-2 rounded hover:bg-red-900"
                 >
                     My Profile
                 </button>
                 <button
                     onClick={handleLogout}
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
                 >
                     Logout
                 </button>
@@ -151,7 +140,7 @@ function HomePage() {
                     />
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-700"
+                        className="bg-red-500 text-white px-4 py-2 mt-2 rounded hover:bg-red-900"
                     >
                         Post Announcement
                     </button>
