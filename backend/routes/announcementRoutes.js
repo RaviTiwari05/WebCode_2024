@@ -1,3 +1,4 @@
+// announcements.js
 const express = require('express');
 const router = express.Router();
 const Announcement = require('../models/Announcement');
@@ -7,15 +8,16 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post('/', authMiddleware, async (req, res) => {
     try {
         const { text } = req.body;
-        const { userName, department } = req.user;
+        const { userName, department } = req.user; // Retrieve userName and department from authMiddleware
 
         const announcement = new Announcement({
             text,
             userName,
             department
         });
+
         await announcement.save();
-        res.status(201).json(announcement);  // Send the new announcement as response
+        res.status(201).json(announcement); // Send the new announcement as response
     } catch (error) {
         res.status(500).json({ message: 'Failed to create announcement' });
     }

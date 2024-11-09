@@ -13,9 +13,9 @@ function HomePage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const isAuthenticated = localStorage.getItem('isAuthenticated');
-        if (!isAuthenticated) {
-            navigate('/login');
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/');  // Redirect to login if no token is found
         } else {
             fetchAnnouncements();
             setIsLoading(false);
@@ -57,9 +57,8 @@ function HomePage() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('token');
-        navigate('/');
+        localStorage.removeItem('token');  // Remove token
+        navigate('/');  // Redirect to login
     };
 
     // Handle announcement submission
@@ -75,18 +74,22 @@ function HomePage() {
                 },
                 body: JSON.stringify({ text: announcementText })
             });
+    
             if (response.ok) {
                 const newAnnouncement = await response.json();
-                setAnnouncementText(''); // Clear input
-                setAnnouncements([newAnnouncement, ...announcements]); // Add new announcement to state
-                setFilteredResults([newAnnouncement, ...filteredResults]); // Update filtered results
+                setAnnouncementText('');
+                setAnnouncements([newAnnouncement, ...announcements]);
+                setFilteredResults([newAnnouncement, ...filteredResults]);
             } else {
-                throw new Error('Failed to post announcement');
+                const errorData = await response.json();
+                console.error('Error posting announcement:', errorData.message);
+                throw new Error(errorData.message || 'Failed to post announcement');
             }
         } catch (error) {
             console.error('Error posting announcement:', error);
         }
     };
+    
 
     // Update filtered results based on search query
     useEffect(() => {
