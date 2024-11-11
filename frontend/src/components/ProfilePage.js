@@ -7,7 +7,7 @@ function ProfilePage({ profileData }) {
   if (!profileData) return <div>Loading...</div>;
 
   return (
-    <div className="bg-gradient-to-r from-blue-400 to-purple-500 min-h-screen flex items-center justify-center text-center p-4">
+    <div className="bg-gradient-to-r from-slate-200 to-orange-400 min-h-screen flex items-center justify-center text-center p-4">
       <div className="bg-white shadow-2xl rounded-lg p-6 w-full max-w-sm transform transition duration-500 hover:scale-105">
         <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mt-3">
           My Profile
@@ -37,7 +37,7 @@ function ProfilePage({ profileData }) {
             navigate('/home');
             window.location.reload();  // Force the page to reload
           }}
-          className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none"
+          className="mt-6 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-900 focus:outline-none"
         >
           Back to Home
         </button>

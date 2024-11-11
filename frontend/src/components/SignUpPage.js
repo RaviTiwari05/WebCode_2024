@@ -35,8 +35,8 @@ function SignUpPage() {
     };
 
   return (
-    <div className="bg-blue-100 h-screen flex items-center justify-center">
-      <div className="bg-blue-200 p-10 rounded-lg shadow-md w-full max-w-sm">
+    <div className="bg-pink-100 h-screen flex items-center justify-center">
+      <div className="bg-pink-300 p-10 rounded-lg shadow-md w-full max-w-sm">
         <h1 className="text-3xl font-bold mb-6 text-center">Create Your Account</h1>
         <form onSubmit={handleSubmit} className="text-center">
           <div className="mb-4">
@@ -111,7 +111,7 @@ function SignUpPage() {
           </div>
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+            className="bg-pink-500 hover:bg-pink-900 text-white font-bold py-2 px-4 rounded w-full"
           >
             Sign Up
           </button>

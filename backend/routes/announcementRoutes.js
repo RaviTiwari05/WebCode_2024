@@ -33,11 +33,11 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const announcementId = req.params.id;
         const deletedAnnouncement = await Announcement.findByIdAndDelete(announcementId);
-        
+
         if (!deletedAnnouncement) {
             return res.status(404).json({ message: 'Announcement not found' });
         }
@@ -48,5 +48,6 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
 
 module.exports = router;

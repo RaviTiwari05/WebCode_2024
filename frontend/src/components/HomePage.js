@@ -11,6 +11,7 @@ function HomePage() {
     const [filteredResults, setFilteredResults] = useState([]);
     const [profileData, setProfileData] = useState(null);
     const [announcementText, setAnnouncementText] = useState('');
+    const [currentTime, setCurrentTime] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,6 +23,17 @@ function HomePage() {
             setIsLoading(false);
         }
     }, [navigate]);
+
+    // Update the current time every second
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = new Date();
+            setCurrentTime(now.toLocaleTimeString());
+        }, 1000); // Update every second
+
+        // Clean up the interval on component unmount
+        return () => clearInterval(interval);
+    }, []);
 
     // Fetch announcements from the API with the Authorization header
     const fetchAnnouncements = async () => {
@@ -163,6 +175,11 @@ function HomePage() {
             </header>
 
             <div className="flex-grow p-6">
+                {/* Display current time */}
+                <div className="text-center text-lg mb-4">
+                    Current Time: {currentTime}
+                </div>
+
                 <form onSubmit={handleAnnouncementSubmit} className="mb-6">
                     <input
                         type="text"
@@ -188,6 +205,8 @@ function HomePage() {
                                 <p className="text-lg font-medium">{announcement.text}</p>
                                 <p className="text-sm text-gray-900 ">Department: {announcement.department}</p>
                                 <p className="text-sm text-gray-900">Posted by: {announcement.userName}</p>
+                                {/* Format and display the creation date */}
+                                <p className="text-sm text-gray-600">Posted on: {new Date(announcement.createdAt).toLocaleDateString()}</p>
                             </div>
                             <button
                                 onClick={() => handleDeleteAnnouncement(announcement._id)}
@@ -198,7 +217,6 @@ function HomePage() {
                         </li>
                     ))}
                 </ul>
-
             </div>
 
             <footer className="bg-gradient-to-r from-indigo-600 to-pink-600 text-white py-4 mt-auto">

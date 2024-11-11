@@ -71,7 +71,7 @@ function LoginPage() {
                         />
                     </div>
 
-                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+                    <button type="submit" className="bg-red-400 hover:bg-red-900 text-white font-bold py-2 px-4 rounded w-full">
                         Continue
                     </button>
                 </form>
