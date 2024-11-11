@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import ProfilePage from './ProfilePage';
 import { toast } from 'react-toastify';
 
-
 function HomePage() {
     const [showProfile, setShowProfile] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -127,7 +126,11 @@ function HomePage() {
         setFilteredResults(results);
     }, [searchQuery, announcements]);
 
-    if (showProfile) return <ProfilePage profileData={profileData} />;
+    const handleBackToHome = () => {
+        setShowProfile(false);
+    };
+
+    if (showProfile) return <ProfilePage profileData={profileData} onBackToHome={handleBackToHome} />;
     if (isLoading) return <div className="text-center text-xl">Loading...</div>;
 
     return (
