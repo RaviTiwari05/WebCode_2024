@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfilePage from './ProfilePage';
+import { toast } from 'react-toastify';
+
 
 function HomePage() {
     const [showProfile, setShowProfile] = useState(false);
@@ -22,10 +24,16 @@ function HomePage() {
         }
     }, [navigate]);
 
-    // Fetch announcements from the API
+    // Fetch announcements from the API with the Authorization header
     const fetchAnnouncements = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/announcements');
+            const token = localStorage.getItem('token');  // Get token from localStorage
+            const response = await fetch('http://localhost:5000/api/announcements', {
+                headers: {
+                    Authorization: `Bearer ${token}`,  // Include the token in the request headers
+                }
+            });
+
             if (response.ok) {
                 const data = await response.json();
                 setAnnouncements(data);
@@ -61,7 +69,6 @@ function HomePage() {
         navigate('/');  // Redirect to login
     };
 
-    // Handle announcement submission
     const handleAnnouncementSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -74,12 +81,10 @@ function HomePage() {
                 },
                 body: JSON.stringify({ text: announcementText })
             });
-    
+
             if (response.ok) {
-                const newAnnouncement = await response.json();
                 setAnnouncementText('');
-                setAnnouncements([newAnnouncement, ...announcements]);
-                setFilteredResults([newAnnouncement, ...filteredResults]);
+                fetchAnnouncements();  // Fetch the updated list after posting
             } else {
                 const errorData = await response.json();
                 console.error('Error posting announcement:', errorData.message);
@@ -89,9 +94,30 @@ function HomePage() {
             console.error('Error posting announcement:', error);
         }
     };
-    
 
-    // Update filtered results based on search query
+    // Handle deleting an announcement
+    const handleDeleteAnnouncement = async (announcementId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:5000/api/announcements/${announcementId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            if (response.ok) {
+                fetchAnnouncements(); // Re-fetch announcements after deletion
+            } else {
+                const errorData = await response.json();
+                console.error('Error deleting announcement:', errorData.message);
+                throw new Error(errorData.message || 'Failed to delete announcement');
+            }
+        } catch (error) {
+            console.error('Error deleting announcement:', error);
+        }
+    };
+
     useEffect(() => {
         const results = announcements.filter((announcement) =>
             announcement.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -102,64 +128,78 @@ function HomePage() {
     }, [searchQuery, announcements]);
 
     if (showProfile) return <ProfilePage profileData={profileData} />;
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div className="text-center text-xl">Loading...</div>;
 
     return (
-        <div className="bg-red-100 min-h-screen flex flex-col">
-            <header className="bg-red-500 text-white p-4 flex items-center justify-between space-x-4">
-                <h1 className="text-2xl font-bold">Smart Campus Connect</h1>
+        <div className="bg-gradient-to-r from-indigo-400 to-pink-400 min-h-screen flex flex-col font-sans">
+            <header className="bg-transparent text-black p-3 flex items-center justify-between sticky top-0 shadow-lg backdrop-blur-md bg-opacity-60 z-10">
+                <h1 className="text-3xl font-bold text-shadow">Smart Campus Connect</h1>
                 <div className="flex-grow max-w-md">
                     <input
                         type="text"
-                        placeholder="Search by text, department, or user"
+                        placeholder="Search announcements..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="border rounded px-4 py-2 w-full"
+                        className="border rounded px-4 py-2 w-full text-black-700 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                 </div>
-                <button
-                    onClick={handleProfileClick}
-                    className="text-white bg-red-700 px-4 py-2 rounded hover:bg-red-900"
-                >
-                    My Profile
-                </button>
-                <button
-                    onClick={handleLogout}
-                    className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
-                >
-                    Logout
-                </button>
+                <div className="flex items-center space-x-4">
+                    <button
+                        onClick={handleProfileClick}
+                        className="text-white bg-indigo-700 hover:bg-indigo-800 px-4 py-2 rounded focus:outline-none"
+                    >
+                        My Profile
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="bg-pink-700 text-white hover:bg-pink-800 px-4 py-2 rounded focus:outline-none"
+                    >
+                        Logout
+                    </button>
+                </div>
             </header>
 
-            <div className="flex-grow p-4">
-                <form onSubmit={handleAnnouncementSubmit} className="mb-4">
+            <div className="flex-grow p-6">
+                <form onSubmit={handleAnnouncementSubmit} className="mb-6">
                     <input
                         type="text"
                         placeholder="Share an announcement..."
                         value={announcementText}
                         onChange={(e) => setAnnouncementText(e.target.value)}
-                        className="border rounded px-4 py-2 w-full"
+                        className="border rounded px-4 py-1.5 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                         required
                     />
                     <button
                         type="submit"
-                        className="bg-red-500 text-white px-4 py-2 mt-2 rounded hover:bg-red-900"
+                        className="bg-indigo-600 text-white px-6 py-2 mt-4 rounded-md hover:bg-indigo-700 focus:outline-none"
                     >
                         Post Announcement
                     </button>
                 </form>
 
-                <h2 className="text-xl font-bold mb-2">Announcements</h2>
-                <ul>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Announcements</h2>
+                <ul className="space-y-4">
                     {filteredResults.map((announcement) => (
-                        <li key={announcement._id} className="border p-4 mb-2 rounded bg-white shadow-md">
+                        <li key={announcement._id} className=" px-1 bg-white p-1 rounded-lg shadow-md hover:scale-95 transform transition-all hover:bg-gray-100">
                             <p className="text-lg font-medium">{announcement.text}</p>
-                            <p className="text-sm text-gray-600">Department: {announcement.department}</p>
-                            <p className="text-sm text-gray-600">Posted by: {announcement.userName}</p>
+                            <p className="text-sm text-gray-500">Department: {announcement.department}</p>
+                            <p className="text-sm text-gray-500">Posted by: {announcement.userName}</p>
+                            <button
+                                onClick={() => handleDeleteAnnouncement(announcement._id)}
+                                className="mt-0 text-red-600 hover:text-red-800 focus:outline-none"
+                            >
+                                Delete
+                            </button>
                         </li>
                     ))}
                 </ul>
             </div>
+
+            <footer className="bg-gradient-to-r from-indigo-600 to-pink-600 text-white py-4 mt-auto">
+                <div className="flex justify-center">
+                    <p className="text-lg">© 2024 Smart Campus Connect. All rights reserved.</p>
+                </div>
+            </footer>
         </div>
     );
 }
