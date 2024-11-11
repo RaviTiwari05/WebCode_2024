@@ -186,7 +186,7 @@ function HomePage() {
                         placeholder="Share an announcement..."
                         value={announcementText}
                         onChange={(e) => setAnnouncementText(e.target.value)}
-                        className="border rounded px-4 py-1.5 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        className="border rounded px-4 py-1.5 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-black"
                         required
                     />
                     <button
