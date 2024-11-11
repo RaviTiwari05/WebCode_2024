@@ -134,7 +134,7 @@ function HomePage() {
     if (isLoading) return <div className="text-center text-xl">Loading...</div>;
 
     return (
-        <div className="bg-gradient-to-r from-indigo-400 to-pink-400 min-h-screen flex flex-col font-sans">
+        <div className="bg-gradient-to-r from-slate-300 to-pink-400 min-h-screen flex flex-col font-sans">
             <header className="bg-transparent text-black p-3 flex items-center justify-between sticky top-0 shadow-lg backdrop-blur-md bg-opacity-60 z-10">
                 <h1 className="text-3xl font-bold text-shadow">Smart Campus Connect</h1>
                 <div className="flex-grow max-w-md">
@@ -149,13 +149,13 @@ function HomePage() {
                 <div className="flex items-center space-x-4">
                     <button
                         onClick={handleProfileClick}
-                        className="text-white bg-indigo-700 hover:bg-indigo-800 px-4 py-2 rounded focus:outline-none"
+                        className="text-white bg-pink-900 hover:bg-teal-200 px-4 py-2 rounded focus:outline-none"
                     >
                         My Profile
                     </button>
                     <button
                         onClick={handleLogout}
-                        className="bg-pink-700 text-white hover:bg-pink-800 px-4 py-2 rounded focus:outline-none"
+                        className="bg-pink-900 text-white hover:bg-teal-200 px-4 py-2 rounded focus:outline-none"
                     >
                         Logout
                     </button>
@@ -174,28 +174,31 @@ function HomePage() {
                     />
                     <button
                         type="submit"
-                        className="bg-indigo-600 text-white px-6 py-2 mt-4 rounded-md hover:bg-indigo-700 focus:outline-none"
+                        className="bg-slate-500 text-white px-6 py-2 mt-4 rounded-md hover:bg-teal-500 focus:outline-none"
                     >
                         Post Announcement
                     </button>
                 </form>
 
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Announcements</h2>
+                <h2 className="text-2xl font-bold text-black mb-4">Announcements</h2>
                 <ul className="space-y-4">
                     {filteredResults.map((announcement) => (
-                        <li key={announcement._id} className=" px-1 bg-white p-1 rounded-lg shadow-md hover:scale-95 transform transition-all hover:bg-gray-100">
-                            <p className="text-lg font-medium">{announcement.text}</p>
-                            <p className="text-sm text-gray-500">Department: {announcement.department}</p>
-                            <p className="text-sm text-gray-500">Posted by: {announcement.userName}</p>
+                        <li key={announcement._id} className="bg-white p-2 rounded-lg shadow-md hover:scale-95 transform transition-all hover:bg-gray-100">
+                            <div className="flex items-center space-x-6">
+                                <p className="text-lg font-medium">{announcement.text}</p>
+                                <p className="text-sm text-gray-900 ">Department: {announcement.department}</p>
+                                <p className="text-sm text-gray-900">Posted by: {announcement.userName}</p>
+                            </div>
                             <button
                                 onClick={() => handleDeleteAnnouncement(announcement._id)}
-                                className="mt-0 text-red-600 hover:text-red-800 focus:outline-none"
+                                className="mt-0 text-red-600 hover:text-red-900 focus:outline-none"
                             >
                                 Delete
                             </button>
                         </li>
                     ))}
                 </ul>
+
             </div>
 
             <footer className="bg-gradient-to-r from-indigo-600 to-pink-600 text-white py-4 mt-auto">
