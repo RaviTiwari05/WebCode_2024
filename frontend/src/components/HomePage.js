@@ -134,7 +134,7 @@ function HomePage() {
     if (isLoading) return <div className="text-center text-xl">Loading...</div>;
 
     return (
-        <div className="bg-gradient-to-r from-slate-300 to-pink-400 min-h-screen flex flex-col font-sans">
+        <div className="bg-gradient-to-r from-slate-200 to-red-400 min-h-screen flex flex-col font-sans">
             <header className="bg-transparent text-black p-3 flex items-center justify-between sticky top-0 shadow-lg backdrop-blur-md bg-opacity-60 z-10">
                 <h1 className="text-3xl font-bold text-shadow">Smart Campus Connect</h1>
                 <div className="flex-grow max-w-md">
