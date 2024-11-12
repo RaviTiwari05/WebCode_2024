@@ -10,8 +10,8 @@ const authMiddleware = (req, res, next) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = {
             userId: decoded.userId,
-            userName: decoded.userName, // Ensure userName is included in the token payload
-            department: decoded.department // Ensure department is included in the token payload
+            userName: decoded.userName, 
+            department: decoded.department
         };
         next();
     } catch (error) {

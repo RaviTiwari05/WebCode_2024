@@ -22,10 +22,10 @@ function LoginPage() {
     
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('token', data.token); // Store JWT token in local storage
-                localStorage.setItem('isAuthenticated', 'true'); // Set authentication flag
+                localStorage.setItem('token', data.token); 
+                localStorage.setItem('isAuthenticated', 'true');
                 toast.success(data.message || 'Login successful');
-                navigate('/home'); // Redirect to home page after successful login
+                navigate('/home'); 
             } else {
                 const data = await response.json();
                 toast.error(data.message || 'Login failed');

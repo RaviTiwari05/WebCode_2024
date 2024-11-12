@@ -17,31 +17,31 @@ function HomePage() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/');  // Redirect to login if no token is found
+            navigate('/');  
         } else {
             fetchAnnouncements();
             setIsLoading(false);
         }
     }, [navigate]);
 
-    // Update the current time every second
+    
     useEffect(() => {
         const interval = setInterval(() => {
             const now = new Date();
             setCurrentTime(now.toLocaleTimeString());
-        }, 1000); // Update every second
+        }, 1000); 
 
-        // Clean up the interval on component unmount
+        
         return () => clearInterval(interval);
     }, []);
 
-    // Fetch announcements from the API with the Authorization header
+    
     const fetchAnnouncements = async () => {
         try {
-            const token = localStorage.getItem('token');  // Get token from localStorage
+            const token = localStorage.getItem('token');  
             const response = await fetch('http://localhost:5000/api/announcements', {
                 headers: {
-                    Authorization: `Bearer ${token}`,  // Include the token in the request headers
+                    Authorization: `Bearer ${token}`,  
                 }
             });
 
@@ -76,8 +76,8 @@ function HomePage() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');  // Remove token
-        navigate('/');  // Redirect to login
+        localStorage.removeItem('token');  
+        navigate('/');  
     };
 
     const handleAnnouncementSubmit = async (e) => {
@@ -95,7 +95,7 @@ function HomePage() {
 
             if (response.ok) {
                 setAnnouncementText('');
-                fetchAnnouncements();  // Fetch the updated list after posting
+                fetchAnnouncements();  
             } else {
                 const errorData = await response.json();
                 console.error('Error posting announcement:', errorData.message);
@@ -106,7 +106,7 @@ function HomePage() {
         }
     };
 
-    // Handle deleting an announcement
+    
     const handleDeleteAnnouncement = async (announcementId) => {
         try {
             const token = localStorage.getItem('token');
@@ -118,7 +118,7 @@ function HomePage() {
             });
 
             if (response.ok) {
-                fetchAnnouncements(); // Re-fetch announcements after deletion
+                fetchAnnouncements(); 
             } else {
                 const errorData = await response.json();
                 console.error('Error deleting announcement:', errorData.message);
