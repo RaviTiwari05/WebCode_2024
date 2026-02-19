@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfilePage from './ProfilePage';
-import { toast } from 'react-toastify';
 
 function HomePage() {
     const [showProfile, setShowProfile] = useState(false);
@@ -17,31 +16,28 @@ function HomePage() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/');  
+            navigate('/');
         } else {
             fetchAnnouncements();
             setIsLoading(false);
         }
     }, [navigate]);
 
-    
     useEffect(() => {
         const interval = setInterval(() => {
             const now = new Date();
             setCurrentTime(now.toLocaleTimeString());
-        }, 1000); 
+        }, 1000);
 
-        
         return () => clearInterval(interval);
     }, []);
 
-    
     const fetchAnnouncements = async () => {
         try {
-            const token = localStorage.getItem('token');  
+            const token = localStorage.getItem('token');
             const response = await fetch('https://webcode-2024.onrender.com/api/announcements', {
                 headers: {
-                    Authorization: `Bearer ${token}`,  
+                    Authorization: `Bearer ${token}`,
                 }
             });
 
@@ -60,9 +56,10 @@ function HomePage() {
     const handleProfileClick = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/auth/profile', {
+            const response = await fetch('https://webcode-2024.onrender.com/api/auth/profile', {
                 headers: { Authorization: `Bearer ${token}` }
             });
+
             if (response.ok) {
                 const data = await response.json();
                 setProfileData(data);
@@ -76,15 +73,15 @@ function HomePage() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');  
-        navigate('/');  
+        localStorage.removeItem('token');
+        navigate('/');
     };
 
     const handleAnnouncementSubmit = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/announcements', {
+            const response = await fetch('https://webcode-2024.onrender.com/api/announcements', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,10 +92,9 @@ function HomePage() {
 
             if (response.ok) {
                 setAnnouncementText('');
-                fetchAnnouncements();  
+                fetchAnnouncements();
             } else {
                 const errorData = await response.json();
-                console.error('Error posting announcement:', errorData.message);
                 throw new Error(errorData.message || 'Failed to post announcement');
             }
         } catch (error) {
@@ -106,11 +102,10 @@ function HomePage() {
         }
     };
 
-    
     const handleDeleteAnnouncement = async (announcementId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/announcements/${announcementId}`, {
+            const response = await fetch(`https://webcode-2024.onrender.com/api/announcements/${announcementId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -118,10 +113,9 @@ function HomePage() {
             });
 
             if (response.ok) {
-                fetchAnnouncements(); 
+                fetchAnnouncements();
             } else {
                 const errorData = await response.json();
-                console.error('Error deleting announcement:', errorData.message);
                 throw new Error(errorData.message || 'Failed to delete announcement');
             }
         } catch (error) {
@@ -148,26 +142,28 @@ function HomePage() {
     return (
         <div className="bg-gradient-to-r from-slate-200 to-green-400 min-h-screen flex flex-col font-sans">
             <header className="bg-transparent text-black p-3 flex items-center justify-between sticky top-0 shadow-lg backdrop-blur-md bg-opacity-60 z-10">
-                <h1 className="text-3xl font-bold text-shadow">Smart Campus Connect</h1>
+                <h1 className="text-3xl font-bold">Smart Campus Connect</h1>
+
                 <div className="flex-grow max-w-md">
                     <input
                         type="text"
                         placeholder="Search announcements..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="border rounded px-4 py-2 w-full text-black-700 focus:outline-none focus:ring-2 focus:ring-black"
+                        className="border rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
                     />
                 </div>
+
                 <div className="flex items-center space-x-4">
                     <button
                         onClick={handleProfileClick}
-                        className="text-white bg-pink-900 hover:bg-teal-200 px-4 py-2 rounded focus:outline-none"
+                        className="text-white bg-pink-900 hover:bg-teal-200 px-4 py-2 rounded"
                     >
                         My Profile
                     </button>
                     <button
                         onClick={handleLogout}
-                        className="bg-pink-900 text-white hover:bg-teal-200 px-4 py-2 rounded focus:outline-none"
+                        className="bg-pink-900 text-white hover:bg-teal-200 px-4 py-2 rounded"
                     >
                         Logout
                     </button>
@@ -175,7 +171,6 @@ function HomePage() {
             </header>
 
             <div className="flex-grow p-6">
-                {/* Display current time */}
                 <div className="text-center text-lg mb-4">
                     Current Time: {currentTime}
                 </div>
@@ -186,31 +181,34 @@ function HomePage() {
                         placeholder="Share an announcement..."
                         value={announcementText}
                         onChange={(e) => setAnnouncementText(e.target.value)}
-                        className="border rounded px-4 py-1.5 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-black"
+                        className="border rounded px-4 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-black"
                         required
                     />
                     <button
                         type="submit"
-                        className="bg-slate-500 text-white px-6 py-2 mt-4 rounded-md hover:bg-teal-500 focus:outline-none"
+                        className="bg-slate-500 text-white px-6 py-2 mt-4 rounded-md hover:bg-teal-500"
                     >
                         Post Announcement
                     </button>
                 </form>
 
-                <h2 className="text-2xl font-bold text-black mb-4">Announcements</h2>
+                <h2 className="text-2xl font-bold mb-4">Announcements</h2>
+
                 <ul className="space-y-4">
                     {filteredResults.map((announcement) => (
-                        <li key={announcement._id} className="bg-white p-2 rounded-lg shadow-md hover:scale-95 transform transition-all hover:bg-gray-100">
+                        <li key={announcement._id} className="bg-white p-2 rounded-lg shadow-md hover:bg-gray-100">
                             <div className="flex items-center space-x-6">
                                 <p className="text-lg font-medium">{announcement.text}</p>
-                                <p className="text-sm text-gray-900 ">Department: {announcement.department}</p>
-                                <p className="text-sm text-gray-900">Posted by: {announcement.userName}</p>
-                                {/* Format and display the creation date */}
-                                <p className="text-sm text-gray-600">Posted on: {new Date(announcement.createdAt).toLocaleDateString()}</p>
+                                <p className="text-sm">Department: {announcement.department}</p>
+                                <p className="text-sm">Posted by: {announcement.userName}</p>
+                                <p className="text-sm">
+                                    Posted on: {new Date(announcement.createdAt).toLocaleDateString()}
+                                </p>
                             </div>
+
                             <button
                                 onClick={() => handleDeleteAnnouncement(announcement._id)}
-                                className="mt-0 text-red-600 hover:text-red-900 focus:outline-none"
+                                className="mt-2 text-red-600 hover:text-red-900"
                             >
                                 Delete
                             </button>
