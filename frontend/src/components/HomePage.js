@@ -35,7 +35,7 @@ function HomePage() {
     const fetchAnnouncements = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('https://webcode-2024.onrender.com/api/announcements', {
+            const response = await fetch('https://webcode-2024-0988.onrender.com/api/announcements', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
