@@ -12,7 +12,7 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('https://webcode-2024.onrender.com/api/auth/login', {
+            const response = await fetch('https://webcode-2024-0988.onrender.com/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
